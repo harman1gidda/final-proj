@@ -21,8 +21,8 @@ function Navbar(){
           {isOpen && (
           <ul>
             <li><button className="navbar-btn" onClick={() => handleNavigation('/')}>Home</button></li>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/allitems')}>All Items</button></li>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/submit')}>Submit</button></li>
+            <li><button className="navbar-btn" onClick={() => handleNavigation('/item')}>All Items</button></li>
+            <li><button className="navbar-btn" onClick={() => handleNavigation('/signup')}>Sign Up</button></li>
             <li><button className="navbar-btn" onClick={() => handleNavigation('/login')}>Log In</button></li>
           </ul>
           )}

@@ -34,7 +34,7 @@ app.post("/signup", (req, res) => {
         error: err,
       });
     }
-    knex("user")
+    knex("users")
       .insert({
         first_name,
         last_name,
@@ -51,27 +51,36 @@ app.post("/signup", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  knex("user")
+  if (!username || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Username and password are required",
+    });
+  }
+
+  knex("users")
     .where({ username })
     .first()
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
+        // console.log("User not Found:", username);
         return res
           .status(400)
           .json({ success: false, message: "User not found" });
       }
 
       bcrypt
-        .compare(password, user.password)
+        .compare(password, users.password)
         .then((isPasswordValid) => {
           if (isPasswordValid) {
             // Set the session cookie with the user ID
-            res.cookie("session_id", user.id, {
+            res.cookie("session_id", users.id, {
               httpOnly: true,
               maxAge: 3600000,
             }); // cookie expires in 1 hour
             res.json({ success: true, message: "Logged in successfully" });
           } else {
+            //console.log('Invalid credentials for user:', username);
             res
               .status(400)
               .json({ success: false, message: "Invalid credentials" });
@@ -86,10 +95,17 @@ app.post("/login", (req, res) => {
         });
     })
     .catch((err) => {
+      //console.error('Error finding user:', err);
       res
         .status(500)
         .json({ success: false, message: "Error finding user", error: err });
     });
+});
+
+//----LOGOUT and Clear COOKIE----//
+app.post("/logout", (req, res) => {
+  res.clearCookie("session_id"); // Clear the session cookie
+  res.json({ success: true, message: "Logged out successfully" });
 });
 
 //----GET----//
@@ -127,7 +143,7 @@ app.post("/item", (req, res) => {
     return res.status(400).json({ success: false, message: "User not found" });
   }
 
-  kenx("user")
+  kenx("users")
     .where({ id: sessionId })
     .first()
     .then((user) => {
@@ -159,7 +175,7 @@ app.patch("/item/:id", (req, res) => {
     return res.status(400).json({ success: false, message: "User not found" });
   }
 
-  knex("user")
+  knex("users")
     .where({ id: sessionId })
     .first()
     .then((user) => {
@@ -191,10 +207,4 @@ app.delete("/item/:id", (req, res) => {
     .then(function () {
       res.json({ succeess: true, message: "ok" });
     });
-});
-
-//----LOGOUT and Clear COOKIE----//
-app.post("/logout", (req, res) => {
-  res.clearCookie("session_id"); // Clear the session cookie
-  res.json({ success: true, message: "Logged out successfully" });
 });

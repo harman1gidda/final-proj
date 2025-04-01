@@ -13,7 +13,7 @@ export default function Home() {
             <div className='NavContainer'>
                 <div className='NavBar'>
                     <div className='button'>
-                        <a href="/allitems" className="iconLink">
+                        <a href="/item" className="iconLink">
                             {/* <img src={Gears} alt="gears" /> */}
                             <button className='iconButton'>All Items</button>
                         </a>
@@ -25,9 +25,9 @@ export default function Home() {
                         </a>
                     </div>
                 </div>
-                <div className='SubmitBar'>
+                <div className='SignupBar'>
                     <div className='button' id="submitButton">
-                        <button><Link to={"/submit"}>Submit New Request</Link></button>
+                        <button><Link to={"/signup"}>Sign Up</Link></button>
                     </div>
                 </div>
             </div>
