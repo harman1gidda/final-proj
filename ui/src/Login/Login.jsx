@@ -30,7 +30,8 @@ export default function Login() {
       .then(response => response.json())
       .then((data) => {
         if (data.success) {
-          //localStorage.setItem('session_id', data.session_id); // Save session
+          localStorage.setItem('session_id', data.session_id); // Save session
+          localStorage.setItem('username', formData.username);
           navigate('/');
         } else {
           setError('Invalid credentials');

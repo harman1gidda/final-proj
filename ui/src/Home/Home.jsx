@@ -6,6 +6,15 @@ import { Link } from 'react-router-dom';
 // import Sites from "../assets/sites.png"
 
 export default function Home() {
+    // const [username, setUsername] = useState(localStorage.getItem('username'));
+    // useEffect(() => {
+    //     const storedUsername = localStorage.getItem('username');
+    //     setUsername(storedUsername);
+    // }, []);
+    // console.log(localStorage.getItem('username'));
+
+    const username = localStorage.getItem('username');
+    console.log(username);
 
     return (
         <>
@@ -18,17 +27,26 @@ export default function Home() {
                             <button className='iconButton'>All Items</button>
                         </a>
                     </div>
-                    <div className='button'>
+                    {/* <div className='button'>
                         <a href="/login" className="iconLink">
-                            {/* <img src={Sites} alt="sites" /> */}
+                            <img src={Sites} alt="sites" />
                             <button className='iconButton'>Log In</button>
                         </a>
-                    </div>
+                    </div> */}
                 </div>
-                <div className='SignupBar'>
+                {/* <div className='SignupBar'>
                     <div className='button' id="submitButton">
                         <button><Link to={"/signup"}>Sign Up</Link></button>
                     </div>
+                </div> */}
+
+                <div className='userStatus'>
+                    {username ? (
+                    <p>Welcome, {username}!</p>
+                    // Display username if logged in
+                    ) : (
+                    <p>Guest</p>  // Display Guest if no one is logged in
+                    )}
                 </div>
             </div>
 

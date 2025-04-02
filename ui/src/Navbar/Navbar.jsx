@@ -1,33 +1,51 @@
 
 import React, { useState } from 'react';
 import './Navbar.css'
-import {useNavigate} from 'react-router-dom';
-import Hamburger from "hamburger-react"
+import {Link, useNavigate} from 'react-router-dom';
+// import Hamburger from "hamburger-react"
 
-function Navbar(){
+function Navbar() {
   const navigate = useNavigate();
-  const [isOpen, setOpen] = useState(false)
+  // const [isOpen, setOpen] = useState(false)
+  const isAuthenticated = localStorage.getItem('session_id');
+  const username = localStorage.getItem('username');
 
-  const handleNavigation = (path) => {
-    navigate(path);
+  const handleLogout = () => {
+    // Remove session data from localStorage
+    localStorage.removeItem('session_id');
+    localStorage.removeItem('username');
+    // Redirect to login page
+    navigate('/login');
   };
 
   return (
     <>
+      <nav className="navbar">
+        <h4 className='navHeader'>Inventory</h4>
 
-        <nav className="navbar">
-          <h4 className='navHeader'>Inventory</h4>
+          {/* {isOpen && ( */}
+        <ul>
+          <li><button className="navbar-btn" onClick={() => navigate('/')}>Home</button></li>
 
-          {isOpen && (
-          <ul>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/')}>Home</button></li>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/item')}>All Items</button></li>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/signup')}>Sign Up</button></li>
-            <li><button className="navbar-btn" onClick={() => handleNavigation('/login')}>Log In</button></li>
-          </ul>
-          )}
-          <Hamburger toggled={isOpen} toggle={setOpen} />
-        </nav>
+          <li><button className="navbar-btn" onClick={() => navigate('/item')}>All Items</button></li>
+
+          {!isAuthenticated ? (
+            <>
+              <li><button className="navbar-btn" onClick={() => navigate('/signup')}>Sign Up</button></li>
+              <li><button className="navbar-btn" onClick={() => navigate('/login')}>Log In</button></li>
+            </>
+              ) : (
+            <>
+                {/* If authenticated, show username and log out button */}
+                <li><span className="navbar-username">Welcome, {username}!</span></li>
+                <li><button className="navbar-btn" onClick={handleLogout}>Log Out</button></li>
+            </>
+            )}
+
+        </ul>
+          {/* )} */}
+          {/* <Hamburger toggled={isOpen} toggle={setOpen} /> */}
+      </nav>
     </>
   )
 }

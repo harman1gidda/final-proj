@@ -5,6 +5,7 @@ import AllItems from '../AllItems/AllItems'
 import Navbar from '../Navbar/Navbar'
 import NotFound from '../NotFound/NotFound'
 import Login from '../Login/Login'
+import Logout from '../Login/Logout'
 import Signup from '../Signup/Signup'
 import ItemDetails from '../ItemDetails/ItemDetails'
 import EditItem from '../EditItem/EditItem'
@@ -13,10 +14,11 @@ import './App.css'
 function App() {
 
   const isAuthenticated = localStorage.getItem('session_id');
+  const username = localStorage.getItem('username');
 
   return (
     <>
-      <Navbar/>
+      <Navbar isAuthenticated={isAuthenticated} username = {username}/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path='/item' element={<AllItems />} />
@@ -24,6 +26,7 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path="/item/:id" element={isAuthenticated ? <ItemDetails /> : <AllItems />} />
         <Route path="/edit/:id" element={isAuthenticated ? <EditItem /> : <AllItems />} />
+        <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
