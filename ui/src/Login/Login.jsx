@@ -9,13 +9,13 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (elm) => {
+    const { name, value } = elm.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (elm) => {
+    elm.preventDefault();
 
     //const {username, password} = formData;
 
@@ -46,14 +46,14 @@ export default function Login() {
       <input
         type="text"
         name="username"
-        placeholder="Username"
+        placeholder="Enter Username"
         value={formData.username}
         onChange={handleChange}
       />
       <input
         type="password"
         name="password"
-        placeholder="Password"
+        placeholder="Enter Password"
         value={formData.password}
         onChange={handleChange}
       />

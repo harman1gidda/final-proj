@@ -137,13 +137,17 @@ app.get("/item/:id", (req, res) => {
 //----POST----//
 app.post("/item", (req, res) => {
   const { item_name, description, quantity } = req.body;
-  const sessionId = req.cookies.session_id;
+  //const sessionId = req.cookies.session_id;
+  const sessionId =
+    req.cookies.session_id || req.headers.authorization?.split(" ")[1];
 
   if (!sessionId) {
-    return res.status(400).json({ success: false, message: "User not found" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User not found for the session!" });
   }
 
-  kenx("users")
+  knex("users")
     .where({ id: sessionId })
     .first()
     .then((user) => {
@@ -161,7 +165,14 @@ app.post("/item", (req, res) => {
           quantity,
         })
         .then(() => {
-          res.json({ succeess: true, message: "ok, item added" });
+          res.json({ success: true, message: "ok, item added" });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            success: false,
+            message: "Error adding item",
+            error: err,
+          });
         });
     });
 });

@@ -37,8 +37,15 @@ function Navbar() {
               ) : (
             <>
                 {/* If authenticated, show username and log out button */}
-                <li><span className="navbar-username">Welcome, {username}!</span></li>
-                <li><button className="navbar-btn" onClick={handleLogout}>Log Out</button></li>
+                <li>
+                  <span className="navbar-username">Welcome, {username}!</span>
+                </li>
+                <li>
+                  <button className="navbar-btn" onClick={handleLogout}>Log Out</button>
+                </li>
+                <li>
+                  <button className="navbar-btn" onClick={() => navigate('/my-items')}>My Items</button>
+                </li>
             </>
             )}
 

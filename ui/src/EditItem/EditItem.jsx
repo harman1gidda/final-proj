@@ -1,27 +1,45 @@
-import { useEffect, useState } from 'react';
+// EditItem.jsx
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function EditItem() {
   const { id } = useParams();
-  const [item, setItem] = useState(null);
-  const [formData, setFormData] = useState({ item_name: '', description: '', quantity: '' });
   const navigate = useNavigate();
+  const sessionId = localStorage.getItem('session_id');
+  const [formData, setFormData] = useState({
+    item_name: '',
+    description: '',
+    quantity: 0,
+  });
 
   useEffect(() => {
-    fetch(`http://localhost:8081/item/${id}`)
-      .then((response) => response.json())
-      .then((data) => setItem(data[0]));
-  }, [id]);
-
-  useEffect(() => {
-    if (item) {
-      setFormData({ item_name: item.item_name, description: item.description, quantity: item.quantity });
+    if (!sessionId) {
+      navigate('/');
+      return;
     }
-  }, [item]);
+
+    fetch(`http://localhost:8081/item/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${sessionId}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          setFormData({
+            item_name: data[0].item_name,
+            description: data[0].description,
+            quantity: data[0].quantity,
+          });
+        }
+      })
+      .catch((err) => console.error('Error fetching item details', err));
+  }, [id, sessionId, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -29,50 +47,42 @@ export default function EditItem() {
 
     fetch(`http://localhost:8081/item/${id}`, {
       method: 'PATCH',
-      mode: 'cors',
       headers: {
-        'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionId}`,
       },
       body: JSON.stringify(formData),
     })
+      .then((response) => response.json())
       .then(() => {
-        navigate('/item'); // Redirect to inventory page after edit
+        navigate(`/item/${id}`);
       })
-      .catch(err => console.error('Error updating item', err));
+      .catch((err) => console.error('Error updating item', err));
   };
 
-  return item ? (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Item Name:
+  return (
+    <div>
+      <h2>Edit Item</h2>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="item_name"
           value={formData.item_name}
           onChange={handleChange}
         />
-      </label>
-      <label>
-        Description:
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
         />
-      </label>
-      <label>
-        Quantity:
         <input
           type="number"
           name="quantity"
           value={formData.quantity}
           onChange={handleChange}
         />
-      </label>
-      <button type="submit">Update Item</button>
-    </form>
-  ) : (
-    <p>Loading edit form...</p>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
   );
 }
