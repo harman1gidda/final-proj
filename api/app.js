@@ -370,35 +370,113 @@ app.post("/my-items", (req, res) => {
     });
 });
 
-//----PATCH----//
+// //----PATCH----//
+// app.patch("/item/:id", (req, res) => {
+//   const { item_name, description, quantity } = req.body;
+//   const sessionId = req.cookies.session_id;
+
+//   if (!sessionId) {
+//     return res.status(400).json({ success: false, message: "User not found" });
+//   }
+
+//   knex("users")
+//     .where({ id: sessionId })
+//     .first()
+//     .then((user) => {
+//       if (!user) {
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "User not found" });
+//       }
+
+//       let getId = req.params.id;
+//       knex("item")
+//         .where({ id: getId })
+//         .update({ item_name, description, quantity })
+//         .then(function () {
+//           res.json({ success: true, message: "ok, item updated" });
+//         })
+//         .catch((err) => {
+//           res.json(err);
+//         });
+//     });
+// });
+
+// PATCH endpoint for updating an item (only by the owner)
 app.patch("/item/:id", (req, res) => {
-  const { item_name, description, quantity } = req.body;
-  const sessionId = req.cookies.session_id;
+  // Retrieve session token from the Authorization header
+  const sessionId = req.headers.authorization
+    ? req.headers.authorization.split(" ")[1]
+    : null;
 
   if (!sessionId) {
-    return res.status(400).json({ success: false, message: "User not found" });
+    return res.status(401).json({
+      success: false,
+      message: "Not authenticated. Please log in.",
+    });
   }
 
+  const { item_name, description, quantity } = req.body;
+  const itemId = req.params.id;
+
+  // Verify the logged-in user exists
   knex("users")
     .where({ id: sessionId })
     .first()
     .then((user) => {
       if (!user) {
         return res
-          .status(400)
+          .status(401)
           .json({ success: false, message: "User not found" });
       }
 
-      let getId = req.params.id;
+      // Find the item and check that it belongs to the logged-in user
       knex("item")
-        .where({ id: getId })
-        .update({ item_name, description, quantity })
-        .then(function () {
-          res.json({ success: true, message: "ok, item updated" });
+        .where({ id: itemId })
+        .first()
+        .then((item) => {
+          if (!item) {
+            return res
+              .status(404)
+              .json({ success: false, message: "Item not found" });
+          }
+
+          if (parseInt(sessionId) !== item.user_id) {
+            return res.status(403).json({
+              success: false,
+              message: "Not authorized to update this item",
+            });
+          }
+
+          // Update the item
+          knex("item")
+            .where({ id: itemId })
+            .update({ item_name, description, quantity })
+            .then(() => {
+              res.json({ success: true, message: "Item updated successfully" });
+            })
+            .catch((err) => {
+              res.status(500).json({
+                success: false,
+                message: "Error updating item",
+                error: err,
+              });
+            });
         })
         .catch((err) => {
-          res.json(err);
+          res.status(500).json({
+            success: false,
+            message: "Error fetching item",
+            error: err,
+          });
         });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Error fetching user",
+        error: err,
+      });
     });
 });
 
@@ -442,12 +520,10 @@ app.delete("/item/:id", (req, res) => {
           .json({ success: false, message: "Item not found" });
       }
       if (item.user_id != sessionId) {
-        return res
-          .status(403)
-          .json({
-            success: false,
-            message: "Not authorized to delete this item",
-          });
+        return res.status(403).json({
+          success: false,
+          message: "Not authorized to delete this item",
+        });
       }
 
       // Proceed to delete if authorized
