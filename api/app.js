@@ -8,18 +8,21 @@ const port = 8081;
 
 const knex = require("knex")(require("./knexfile.js")["development"]);
 
-app.use(cors());
+//app.use(cors());
+// Set up CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow only your frontend's origin
+    // credentials: true,
+    // methods: "GET, POST, PATCH, DELETE",
+    // allowedHeaders: "Content-Type, Accepts, Authorization",
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("application is up and running");
-});
-
-app.listen(port, () => {
-  console.log(
-    `Your Knex and Express applications are running succesfully at port: ${port}`
-  );
 });
 
 //----SIGN-UP----//
@@ -48,9 +51,63 @@ app.post("/signup", (req, res) => {
 });
 
 //----LOG-IN----//
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+// app.post("/login", (req, res) => {
+//   const { username, password } = req.body;
 
+//   if (!username || !password) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Username and password are required",
+//     });
+//   }
+
+//   knex("users")
+//     .where({ username })
+//     .first()
+//     .then((user) => {
+//       if (!user) {
+//         // console.log("User not Found:", username);
+//         return res
+//           .status(400)
+//           .json({ success: false, message: "User not found" });
+//       }
+
+//       bcrypt
+//         .compare(password, user.password)
+//         .then((isPasswordValid) => {
+//           if (isPasswordValid) {
+//             // Set the session cookie with the user ID
+//             res.cookie("session_id", user.id, {
+//               httpOnly: true,
+//               maxAge: 3600000,
+//             }); // cookie expires in 1 hour
+//             res.json({ success: true, message: "Logged in successfully" });
+//           } else {
+//             //console.log('Invalid credentials for user:', username);
+//             res
+//               .status(400)
+//               .json({ success: false, message: "Invalid credentials" });
+//           }
+//         })
+//         .catch((err) => {
+//           res.status(500).json({
+//             success: false,
+//             message: "Error comparing password",
+//             error: err,
+//           });
+//         });
+//     })
+//     .catch((err) => {
+//       //console.error('Error finding user:', err);
+//       res
+//         .status(500)
+//         .json({ success: false, message: "Error finding user", error: err });
+//     });
+// });
+
+// ---- LOG-IN ---- //
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({
       success: false,
@@ -58,48 +115,32 @@ app.post("/login", (req, res) => {
     });
   }
 
-  knex("users")
-    .where({ username })
-    .first()
-    .then((users) => {
-      if (!users) {
-        // console.log("User not Found:", username);
-        return res
-          .status(400)
-          .json({ success: false, message: "User not found" });
-      }
+  try {
+    const user = await knex("users").where({ username }).first();
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
 
-      bcrypt
-        .compare(password, users.password)
-        .then((isPasswordValid) => {
-          if (isPasswordValid) {
-            // Set the session cookie with the user ID
-            res.cookie("session_id", users.id, {
-              httpOnly: true,
-              maxAge: 3600000,
-            }); // cookie expires in 1 hour
-            res.json({ success: true, message: "Logged in successfully" });
-          } else {
-            //console.log('Invalid credentials for user:', username);
-            res
-              .status(400)
-              .json({ success: false, message: "Invalid credentials" });
-          }
-        })
-        .catch((err) => {
-          res.status(500).json({
-            success: false,
-            message: "Error comparing password",
-            error: err,
-          });
-        });
-    })
-    .catch((err) => {
-      //console.error('Error finding user:', err);
-      res
-        .status(500)
-        .json({ success: false, message: "Error finding user", error: err });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      // Instead of setting a cookie, return the session token (user.id)
+      res.json({
+        success: true,
+        message: "Logged in successfully",
+        session_id: user.id,
+      });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid credentials" });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error logging in",
+      error: err,
     });
+  }
 });
 
 //----GET----//
@@ -117,9 +158,107 @@ app.get("/item", (req, res) => {
       res.json(data);
     });
 });
-// GET for loged in user?maybe
+
+// ---- ADD ITEM (for logged-in user) ---- //
+app.post("/my-items", async (req, res) => {
+  const { item_name, description, quantity } = req.body;
+
+  // Expect the session token (user id) in the Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No Authorization header provided" });
+  }
+  const sessionId = authHeader.split(" ")[1];
+  if (!sessionId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid session token" });
+  }
+
+  try {
+    // Verify that the user exists
+    const user = await knex("users").where({ id: sessionId }).first();
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Insert the new item linked to the logged-in user
+    await knex("item").insert({
+      user_id: user.id,
+      item_name,
+      description,
+      quantity,
+    });
+    res.json({ success: true, message: "Item added successfully" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error adding item",
+      error: err,
+    });
+  }
+});
+
+// // GET for loged in user?maybe
+// app.get("/my-items", (req, res) => {
+//   const sessionId = req.cookies.session_id; // Ensure session_id is available
+
+//   if (!sessionId) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "User is not logged in",
+//     });
+//   }
+
+//   // Find the user using the session ID
+//   knex("users")
+//     .where({ id: sessionId })
+//     .first()
+//     .then((users) => {
+//       if (!users) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "User not found",
+//         });
+//       }
+
+//       // Fetch only items belonging to the logged-in user
+//       knex("item")
+//         .where({ user_id: users.id })
+//         .then((items) => {
+//           res.json(items);
+//         })
+//         .catch((err) => {
+//           console.error("Error fetching items:", err);
+//           res.status(500).json({
+//             success: false,
+//             message: "Error fetching items",
+//             error: err,
+//           });
+//         });
+//     })
+//     .catch((err) => {
+//       console.error("Error finding user:", err);
+//       res.status(500).json({
+//         success: false,
+//         message: "Error finding user",
+//         error: err,
+//       });
+//     });
+// });
+
+// GET /my-items route that supports token from cookie or Authorization header
 app.get("/my-items", (req, res) => {
-  const sessionId = req.cookies.session_id; // Ensure session_id is available
+  // Try getting token from cookie; if missing, then from Authorization header
+  const sessionId =
+    req.cookies.session_id ||
+    (req.headers.authorization
+      ? req.headers.authorization.split(" ")[1]
+      : null);
 
   if (!sessionId) {
     return res.status(400).json({
@@ -128,21 +267,19 @@ app.get("/my-items", (req, res) => {
     });
   }
 
-  // Find the user using the session ID
   knex("users")
     .where({ id: sessionId })
     .first()
-    .then((users) => {
-      if (!users) {
-        return res.status(400).json({
-          success: false,
-          message: "User not found",
-        });
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
       }
 
       // Fetch only items belonging to the logged-in user
       knex("item")
-        .where({ user_id: users.id })
+        .where({ user_id: user.id })
         .then((items) => {
           res.json(items);
         })
@@ -189,7 +326,7 @@ app.post("/item", (req, res) => {
 
 // -- POST FOR loged in user? maybe
 
-app.post("/item", (req, res) => {
+app.post("/my-items", (req, res) => {
   console.log("received data:", req.body);
 
   const { item_name, description, quantity } = req.body;
@@ -197,17 +334,17 @@ app.post("/item", (req, res) => {
   // const sessionId =
   //   req.cookies.session_id || req.headers.authorization?.split(" ")[1];
 
-  // if (!sessionId) {
-  //   return res
-  //     .status(400)
-  //     .json({ success: false, message: "User not found for the session!" });
-  // }
+  if (!sessionId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User not found for the session!" });
+  }
 
   knex("users")
     .where({ id: sessionId })
     .first()
-    .then((users) => {
-      if (!users) {
+    .then((user) => {
+      if (!user) {
         return res
           .status(400)
           .json({ success: false, message: "User not found" });
@@ -215,7 +352,7 @@ app.post("/item", (req, res) => {
 
       knex("item")
         .insert({
-          user_id: users.id,
+          user_id: user.id,
           item_name,
           description,
           quantity,
@@ -280,4 +417,10 @@ app.delete("/item/:id", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("session_id"); // Clear the session cookie
   res.json({ success: true, message: "Logged out successfully" });
+});
+
+app.listen(port, () => {
+  console.log(
+    `Your Knex and Express applications are running succesfully at port: ${port}`
+  );
 });

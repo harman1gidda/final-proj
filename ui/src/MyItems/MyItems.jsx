@@ -15,6 +15,7 @@ export default function MyItems() {
       fetch('http://localhost:8081/my-items',{
         method: 'GET',
         mode: 'cors',
+        //credentials: "include",
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -23,17 +24,21 @@ export default function MyItems() {
       })
         .then((response) => response.json())
         .then((data) => {
-          setList(data);
-          // Filter data based on the user ID for the logged-in user
-          //setList(data.filter((item) => item.user_id === userId));
+          console.log('Fetched Data:', data);
+          if (Array.isArray(data)){
+            setList(data);
+          } else {
+            console.log ('Fetche data is not an array');
+            setList([]);
+          }
         })
         .catch((err)=> console.log('error fetching items', err));
     }
   }, [sessionId]);
 
-  const filteredList = list.filter((item) =>
+  const filteredList = Array.isArray(list) ? list.filter((item) =>
     item.item_name.toLowerCase().includes(search.toLowerCase())
-  );
+  ) : [];
 
   return (
     <>

@@ -22,6 +22,7 @@ export default function Login() {
     fetch('http://localhost:8081/login', {
       method: 'POST',
       mode: 'cors',
+     // credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json' },
@@ -34,10 +35,10 @@ export default function Login() {
           localStorage.setItem('username', formData.username);
           navigate('/');
         } else {
-          setError('Invalid credentials');
+          setError(data.message || 'Invalid credentials');
         }
       })
-      .catch(err => setError('Login failed'));
+      .catch(err => setError('Login failed:', err));
   };
 
   return (
