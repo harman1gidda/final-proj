@@ -71,31 +71,45 @@ export default function AddItem() {
   };
 
   return (
-    <div>
+    <>
+    <div className="add-item-container">
       <h2>Add New Item</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="item_name"
-          placeholder="Enter Item Name"
-          value={formData.item_name}
-          onChange={handleChange}
-        />
-        <textarea
-          name="description"
-          placeholder="Enter Item Description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="quantity"
-          placeholder="Enter Quantity"
-          value={formData.quantity}
-          onChange={handleChange}
-        />
+      <form onSubmit={handleSubmit} className="add-item-form">
+        <div className="form-group">
+          <label htmlFor="item_name">Item Name:</label>
+          <input
+            type="text"
+            id="item_name"
+            name="item_name"
+            placeholder="Enter Item Name"
+            value={formData.item_name}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="description">Description:</label>
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Enter Item Description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="quantity">Quantity:</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            placeholder="Enter Quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit">Add Item</button>
       </form>
     </div>
+    </>
   );
 }

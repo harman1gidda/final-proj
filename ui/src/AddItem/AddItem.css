@@ -1,0 +1,120 @@
+/* addItem.css */
+
+/* Container for the entire Add Item page */
+.add-item-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Section */
+.search-container {
+  margin-bottom: 20px;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #34495e;
+}
+
+.search-container input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.search-container input[type="text"]:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(52, 73, 94, 0.4);
+}
+
+/* Add Item Form Styles */
+.add-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-item-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #34495e;
+}
+
+/* Grouping form elements with label and input/textarea */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #34495e;
+}
+
+.add-item-form input[type="text"],
+.add-item-form input[type="number"],
+.add-item-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.add-item-form input[type="text"]:focus,
+.add-item-form input[type="number"]:focus,
+.add-item-form textarea:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 5px rgba(52, 73, 94, 0.4);
+}
+
+/* Textarea specific styling */
+.add-item-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Button styling */
+.add-item-form button {
+  background: linear-gradient(45deg, #34495e, #2c3e50);
+  border: none;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  outline: none;
+}
+
+.add-item-form button:hover {
+  background: linear-gradient(45deg, #2c3e50, #34495e);
+  transform: scale(1.05);
+}
+
+.add-item-form button:active {
+  transform: scale(0.95);
+}
+
+.add-item-form button:focus {
+  box-shadow: 0 0 0 3px rgba(52, 73, 94, 0.3);
+}

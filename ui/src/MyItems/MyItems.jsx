@@ -67,14 +67,16 @@ export default function MyItems() {
 
   return (
     <>
-      <div>
-        <input
-          type="text"
-          placeholder="Search item by name..."
-          value={search}
-          onChange={(elm) => setSearch(elm.target.value)}
-        />
-      </div>
+      <div className="search-container">
+      <label htmlFor="search" className="search-label">Search Items:</label>
+      <input
+        id="search"
+        type="text"
+        placeholder="Search item by name..."
+        value={search}
+        onChange={(elm) => setSearch(elm.target.value)}
+      />
+    </div>
 
       <div>
         <AddItem />

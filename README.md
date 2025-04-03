@@ -1,203 +1,263 @@
-# final-proj
+# Final Project 🚀
 
-## docker container to store data
+This project demonstrates a complete CRUD application running in Docker containers using PostgreSQL for data storage and a React front-end for user interaction. The application enables inventory managers to sign up, log in, create, view, edit, and delete inventory items.
 
--- check the latest version of docker
--- `docker -v`
--- if docker is not install, please make sure to install a docker app
+---
 
-### Follow steps below to create postgres container for the CRUD app
+### 📌 Prerequisites
 
-1. Skip this step if postgress image already exists. Check docker app under images to verify. If image does not exist, Pull down a Dockerized Postgres image from the cloud
-   -- `docker pull postgres`
-2. Create the directories that will house your database data:
-   -- `mkdir -p $HOME/docker/volumes/postgres`
-   -p mean create parent folders
-3. Start up a Docker Postgres container instance of the image that you pulled.
-   -- `docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres`
-   --rm: remove the contaoner when stopped
-   --name: gives explicit name
-   -e: this is enviornmental variable
-   -PASSWORD: use this to connect to the databasedocker
-   -d: run detached state
-   -p: port mapping. exposing a port and mapping to container default port of 5432
-   -v: map the volume that created in previous cmd to /var... which is the default storage in the docker
-   -postgres: is the image to use
+- Docker and Docker Compose installed on your machine.
+- Node.js installed (if running locally without Docker).
+- The following npm packages:
+  - `create-vite@latest`
+  - `react-router-dom`
+  - `express`
+  - `knex`
+  - `pg`
+  - `cors`
+  - `bcrypt`
+  - `cookie-parser`
+  - `nodemon`
 
-- at this point, container id would be displayed and created
+---
 
-4. List all Docker images that are currently running:
-   -- `docker ps -a`
-5. Switch to the Docker image's shell with the container id you see from running the above in your terminal. Then, verify your version of Postgres. Make sure to replace <PSQL-Container-ID> with the id from the previous command output:
-   -- `docker exec -it <PSQL-Container-ID> bash`
-6. Verify the latest version of PostgreSQL was installed correctly by running the following commands:
-   -- `psql --version`
-7. Log in to the psql (Postgres) shell with the default postgres user:
-   -- `psql -U postgres`
-   -- -U: is the user and postgress is the default user
-   -- `\list` to see all the datbases
-8. Now you can write SQL queries in the command line. Invoke this function to show your Postgres version:
-   -- `SELECT version();`
+## Overview
 
-9. Create database
-   -- `CREATE DATABASE <database_name>;`
-   This should be same name as the database in the knexfile.js. For this application, create `harmandb` as the database.
+- **Docker Container for Data Storage** 🐳
+  A Dockerized PostgreSQL container isolates your database and makes it easily portable.
+
+- **Back-End Setup**
+  A Node.js/Express back-end performs CRUD operations using [Knex.js](http://knexjs.org) with PostgreSQL.
+
+- **Front-End Setup**
+  A React application provides a user-friendly interface for inventory managers to manage their items.
+
+---
+
+## 🛠️ Docker & PostgreSQL Setup
+
+### 1. Verify Docker Installation
+
+- **Check Docker Version:**
+  ```bash
+  docker -v
+  ```
+- If Docker is not installed, please install Docker Desktop or your preferred Docker engine.
+
+### 2. Set Up Dockerized PostgreSQL
+
+1. Pull the PostgreSQL Image:
+   Skip if you already have the PostgreSQL image
+
+```bash
+docker pull postgres
+```
+
+2. Create a Directory for Database Data:
+   Create the necessary directory to persist your PostgreSQL data:
+
+```bash
+mkdir -p $HOME/docker/volumes/postgres
+```
+
+(-p ensures that all parent directories are created if needed.)
+
+3. Start the PostgreSQL Container:
+   Run the container:
+
+```bash
+docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
+```
+
+--rm: Remove the container when it stops.
+--name: Assigns an explicit name.
+-e: Sets environmental variables.
+-PASSWORD: Use this to connect to the databasedocker
+-d: Runs the container in detached mode.
+-p: Maps port 5432 on your machine to port 5432 on the container.
+-v: Mounts the host directory to the container's data directory.
+
+4. Verify Running Containers:
+
+   ```bash
+   docker ps -a
+   ```
+
+5. Access the Container Shell:
+   Replace <PSQL-Container-ID> with your container ID:
+
+```bash
+docker exec -it <PSQL-Container-ID> bash
+```
+
+6. Verify PostgreSQL Installation:
+
+```bash
+psql --version
+```
+
+7. Log In to the PostgreSQL Shell:
+
+```bash
+psql -U postgres
+```
+
+Then run `\list` to see available databases.
+
+8. Check PostgreSQL Version:
+
+```bash
+SELECT version();
+```
+
+9. Create database:
+   Create a database matching your `knexfile.js` configuration. For this application:
+
+```bash
+CREATE DATABASE <database_name>;
+```
+
+For this application, create `harmandb` as the database.
+
 10. Connect to newly create database
-    -- `\c <database_name>`
-11. Navigate to the terminal in the VS Code and `cd api`
 
-- once in the folder, follow steps to migrate and seed the dummy tables.
+```bash
+\c <database_name>
+```
 
-Once tables are migrated and seeded, table will show up in the database
-
-\*\*Exiting Shells
-Use <CTRL>-D to exit the psql or Docker shell.
-For Mac user, press `q`
-
-- check what tables exist
-  `\dt`
+11. Verify Tables:
+    Run `\dt` to list all tables.
 
 ---
 
-- in the terminal, run following
-  `npm install`
-  -- `npm start`
-- You should see console.log in the terminal and info displayed on the localhost:{port}
+## 🛠️ Back-End Setup
 
-- once the server is running, next step is to migrate and seed the data
+1. Navigate to the API Folder:
 
-- Open another terminal in VS code and cd into api
-- Run
-  -- `npx knex migrate:latest`
+```bash
+cd api
+```
 
-  > table should be populated in the database. run following in the same terminal where you connected to the datatbase to check
-  > -- `SELECT * FROM knex_migrations;`
+2. Install Dependencies & Start the Server:
 
-- Run following command to seed the data into the table
-  -- `npx knex seed:run`
-- To rollback database
-  -- `npx knex migrate:rollback`
+```bash
+npm install
+npm start
+```
 
-- To all tables
-  `\dt`
-- TO see what data is seed in each table
-  `SELECT * FROM <table-name>;`
-- Try above command for users table and you will see hash passwords for users in the table. For ease, existing username and password are listed below:
-  username: JKelly
-  password: cat
+The console should log server details, and the back-end will run on localhost:<port>.
 
-username: JHadock
-password: bird
+3. Database Migrations and Seeding:
 
-username: MWegenke
-password: dog
+   - Migrate Tables:
 
-- New users can be created in the frontend REAT app under Sign Up section
+   ```bash
+   npx knex migrate:latest
+   ```
+
+   Verify migrations with:
+
+   ```bash
+   SELECT * FROM knex_migrations;
+   ```
+
+   - Seed Data:
+
+   ```bash
+   npx knex seed:run
+   ```
+
+   - Rollback:
+
+   ```bash
+   npx knex migrate:rollback
+   ```
+
+4. Test Your Database:
+   In the psql shell, run:
+
+```bash
+\dt
+SELECT * FROM users;
+```
+
+- Existing user credentials:
+
+Username: JKelly | Password: cat
+
+Username: JHadock | Password: bird
+
+Username: MWegenke | Password: dog
+
+New users can be created via the Sign Up page.
 
 ---
 
-# Front End Set-up
+## ⚡ Front-End Setup
 
-1. Open terminal in the VS Code and `cd ui`and run `npm install`.
-2. Run `npm run dev` and frontend is running.
+1. Navigate to the UI Folder:
 
-- Navigate to README.md under ui folder to learn how to spin up a REACT app.
+```bash
+cd ui
+npm install
+```
 
-3. open the app in the chrome browser. You should see Home Page with
+2. Start the Front-End Development Server:
+
+```bash
+npm run dev
+```
+
+3. Open the Application in Your Browser:
+   You should see a Home Page with navigation options:
+
    - Home
    - All Items
    - Sign Up
    - Log In
+     Initially, you'll be visiting the site as a guest.
 
-Currently, you are visitng the site as aGuest and it is displayed on the Home Page
+4. Log In:
+   Click Log In and use one of the existing credentials. Your username will be displayed on the Home Page, and you'll be redirected to the My Items page.
 
-4. Click on Log in and sign it will once of the existing username and password
+---
 
-- User is logged in and username is displayed
-- User is navigated to the My Items page
+### 🌍 Front-End Detailed Instructions
 
-#### Log in satisfy USER Story 2
+1. Log In:
+   Use existing credentials to log in. Your username will display on the Home Page, and you'll be redirected to My Items.
 
-As an inventory manager I want to be able to log into my account so that I can see my inventory of items.
+2. Create a New User:
+   Use the Sign Up section on the navbar to create a new account. Check your database `SELECT * FROM users;` to verify the new user.
 
-- After logging in, the inventory manager should be redirected to their inventory of items
+3. Add New Items:
+   Under My Items, fill in:
 
-5. Create new user
+   - Item Name
+   - Description
+   - Quantity
+     After submission, you'll be redirected to your inventory.
 
-- Click Sign up on the navbar
-- Add requested credentials
-- Check the terminal where you conncected to the database and run `SELECT * FROM users;` to see new user with hashed passwords.
-- Log in with the new user info
+4. Edit & Delete Items:
+   Use the edit and delete buttons under My Items to modify or remove items.
 
-#### Create New User satisfy USER Story 1
+5. All Items:
+   As a visitor, browse all items created by inventory managers. Click an item to see full details.
 
-As an inventory manager I want to be able to create an account so that I can track my inventory.
+---
 
-6. Add new items under My Items Tab
+## 🤝 Contributing
 
-- under My Items tab, enter following:
+Feel free to fork this repository and create pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
-  - Item name
-  - Description
-  - Quantity
+---
 
-  #### Add new item(s) satisfy USER Story 3
+## 🧑‍💻 Authors
 
-  As an inventory manager I want to be able to create a new item so that I can share my item details with the world.
+- Harman Gidda
 
-      - After the item is created, the inventory manager should be redirected to their inventory of items.
-      - An item displays name, description, and quantity.
+---
 
-  #### My Items tab satisfy USER Story 4
+## 📄 License
 
-  As an inventory manager I want to be able to see a my entire inventory of items.
-
-      - The inventory of items should display the first 100 characters of each item description, with “...” at the end if the description is longer than 100 characters.
-
-  #### My Items tab satisfy USER Story 5
-
-  As an inventory manager I want to be able to see any individual item I have added. - The full item information should be displayed.
-
-6. Edit Items
-
-   - Under My Items tab, click edit button to make changes
-   - New dialog box will open and changes can be make.
-
-   #### Edit Items satisfy USER Story 6
-
-   As an inventory manager I want to be able to edit an item so that I can fix any mistakes I made creating it.
-
-   - When the user toggles edit mode, the page remains the same and the fields become editable.
-
-7. Delete Item
-
-   - Under My Items tab, click delete button to remove the item.
-
-   #### Delete Items satisfy USER Story 7
-
-   As an inventory manager I want to be able to delete an item so that I can remove any unwanted content.
-
-   - When the user deletes the item they should be redirected to their inventory of items.
-
-8. All Items tab
-
-   - ALl items are display from all users.
-
-   #### All Items tab satisfy USER Story 8
-
-   As a visitor, who is not logged in, I want to be able to view all items created by every inventory manager so that I can browse every item.
-
-   - Unauthenticated users should be able to view all items, and any single item.
-   - The items should only display the first 100 characters of its description with “...” at the end if it is longer than 100 characters.
-
-   #### All Items tab satisfy USER Story 9
-
-   As a visitor, who is not logged in, I want to be able to view a specific item created by any user so that I can see all of its details.
-
-   - Unauthenticated users should be able to view all items, and any single item.
-
-   #### All Items tab satisfy USER Story 10
-
-   As an inventory manager I want to be able to view all items created by every inventory manager so that I can browse every item.
-
-   - Unauthenticated users should be able to view all items, and any single item
+This project is licensed under the MIT License.
