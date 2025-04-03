@@ -27,7 +27,9 @@ export default function Signup() {
       body: JSON.stringify(formData),
     })
       .then(response => response.json())
-      .then(() => navigate('/login'))
+      .then(() =>
+        alert('you are all signed up'),
+        navigate('/login'))
       .catch(err => setError('Signup failed'));
   };
 

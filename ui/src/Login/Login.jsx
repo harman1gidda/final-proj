@@ -33,7 +33,9 @@ export default function Login() {
         if (data.success) {
           localStorage.setItem('session_id', data.session_id); // Save session
           localStorage.setItem('username', formData.username);
-          navigate('/');
+
+          navigate('/my-items');
+          window.location.reload();
         } else {
           setError(data.message || 'Invalid credentials');
         }

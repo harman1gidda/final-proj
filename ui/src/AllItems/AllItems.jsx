@@ -1,28 +1,11 @@
 import { useEffect, useState } from 'react';
-//import HandleDelete from './HandleDelete';
-// import { Link } from 'react-router-dom';
-// import AddItem from '../AddItem/AddItem';
-// import DeleteItem from '../DeleteItem/DeleteItem';
-// import EditItem from '../EditItem/EditItem';
+import './AllItem.css'
 
 export default function AllItems() {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState('');
   const sessionId = localStorage.getItem('session_id');
   const userId = localStorage.getItem('user_id');
-
-  // useEffect(() => {
-  //   fetch('http://localhost:8081/item')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (sessionId){
-  //         // Filter data based on userId if authenticated
-  //         setList(data.filter(item => item.user_id === userId));
-  //       } else{
-  //         setList(data);
-  //       }
-  //     });
-  // }, [sessionId, userId]); // Re-fetch when authentication status or userId changes
 
   useEffect(() => {
     fetch('http://localhost:8081/item',{
@@ -35,18 +18,19 @@ export default function AllItems() {
       }
     })
     .then((response) => response.json())
-      .then((data) => {
-        setList(data); // Set all items, no filtering based on user ID
-      });
+    .then((data) => {
+      setList(data);
+    });
   }, []);
 
   const filteredList = list.filter((item) => item.item_name.toLowerCase().includes(search.toLowerCase()))
 
-
   return (
     <>
-      <div>
+      <div className="search-container">
+        <label htmlFor="search" className="search-label">Search Items:</label>
         <input
+          id="search"
           type="text"
           placeholder="Search item by name..."
           value={search}
@@ -54,16 +38,27 @@ export default function AllItems() {
         />
       </div>
 
-      <div>
+      <div className="all-items-container">
         <table className="item-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Item Name</th>
+              <th>Description</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
           <tbody>
             {filteredList.map((row) => (
               <tr key={row.id}>
                 <td>{row.id}</td>
                 <td>{row.item_name}</td>
-                <td>{row.description > 100 ? row.description.substring(0, 100) + '...' : row.description}</td>
+                <td>
+                  {row.description.length > 100
+                    ? row.description.substring(0, 100) + '...'
+                    : row.description}
+                </td>
                 <td>{row.quantity}</td>
-
               </tr>
             ))}
           </tbody>
@@ -71,4 +66,5 @@ export default function AllItems() {
       </div>
     </>
   );
+
 }

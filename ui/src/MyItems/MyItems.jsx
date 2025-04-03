@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import AddItem from '../AddItem/AddItem';
 import DeleteItem from '../DeleteItem/DeleteItem';
 import EditItem from '../EditItem/EditItem';
+import './MyItems.css'
 
 export default function MyItems() {
   const [list, setList] = useState([]);

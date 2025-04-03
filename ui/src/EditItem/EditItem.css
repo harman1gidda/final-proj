@@ -1,0 +1,75 @@
+/* EditItems.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1f3c88;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content input[type="text"],
+.modal-content textarea,
+.modal-content input[type="number"] {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.modal-content input[type="text"]:focus,
+.modal-content textarea:focus,
+.modal-content input[type="number"]:focus {
+  border-color: #1f3c88;
+  outline: none;
+}
+
+.modal-content button {
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #1f3c88;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.modal-content button:hover {
+  background-color: #164a73;
+}
+
+.modal-content button[type="button"] {
+  background-color: #aaa;
+}
+
+.modal-content button[type="button"]:hover {
+  background-color: #888;
+}

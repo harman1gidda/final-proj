@@ -21,7 +21,7 @@ function Navbar() {
   return (
     <>
       <nav className="navbar">
-        <h4 className='navHeader'>Inventory</h4>
+        <div className='logo'>Inventory</div>
 
           {/* {isOpen && ( */}
         <ul>

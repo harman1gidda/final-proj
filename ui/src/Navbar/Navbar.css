@@ -1,130 +1,79 @@
-/* Global styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Navbar.css */
 
+/* Main navbar container */
 .navbar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: right;
   align-items: center;
+  justify-content: space-between;
   background-color: #34495e;
-  padding: 20px 40px;
+  padding: 15px 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  height: 123px;
-  position: fixed; /* Ensures navbar stays at the top */
-  top: 0; /* Locks it to the top */
-  left: 0;
-  z-index: 1000; /* Keeps it above other elements */
-}
-
-.navHeader{
-  margin-top: 0;
   position: fixed;
-  top: 40px;
-  left: 20px;
-}
-/* Make sure the content below doesn’t overlap the navbar */
-body {
-  padding-top: 80px; /* Adjusted space so navbar doesn't cover content */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
-.navbar{
-  align-content: center;
+/* Logo/Brand area */
+.navbar .logo {
+  font-size: 1.8rem;
+  color: #ecf0f1;
+  font-weight: bold;
 }
 
-.navbar:hover {
-  background-color: #34495e;
-}
-
-.navbar h4 {
-  font-size: 1.6rem;
-  color: white;
-  font-weight: 700;
-
-}
-
+/* Navigation menu list */
 .navbar ul {
   display: flex;
   list-style: none;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: right;
+  margin: 0;
+  padding: 0;
 }
 
+/* Navigation list items */
 .navbar li {
-  margin: 0 15px;
+  margin-left: 20px;
 }
 
-.navbar-btn {
-  background-color: transparent;
-  border: 2px solid #ecf0f1;
+/* Navigation links */
+.navbar a {
   color: #ecf0f1;
-  padding: 10px 15px;
+  text-decoration: none;
   font-size: 1.1rem;
-  cursor: pointer;
+  padding: 8px 12px;
   border-radius: 4px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.navbar-btn:hover {
+.navbar a:hover {
   background-color: #ecf0f1;
   color: #2c3e50;
-  transform: scale(1.05);
 }
 
-.navbar-btn:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-/* Fire effect */
-.navbar-btn:active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, #ff4500, #ff8c00, #f7d14f);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  animation: fireburst 0.5s ease-out forwards;
-}
-
-@keyframes fireburst {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
-  }}
-
+/* Responsive adjustments without a hamburger menu */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    padding: 15px 20px;
   }
 
-  .navbar h4 {
-    margin-bottom: 15px;
+  /* Logo centered on top */
+  .navbar .logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
   }
 
+  /* Stack nav items vertically */
   .navbar ul {
     flex-direction: column;
-    align-items: right;
+    width: 100%;
   }
 
   .navbar li {
     margin: 10px 0;
-    /* background: #34495e; */
+    width: 100%;
+    text-align: center;
   }
 }

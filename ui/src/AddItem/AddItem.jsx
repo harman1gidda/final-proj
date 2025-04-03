@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './AddItem.css'
 
 export default function AddItem() {
   const [formData, setFormData] = useState({
@@ -8,8 +9,6 @@ export default function AddItem() {
     quantity: 0,
   });
   const navigate = useNavigate();
-  // const sessionId = localStorage.getItem('session_id');  // Ensure session_id exists
-  // const userId = localStorage.getItem('user_id');  // Assuming user_id is stored on login
 
   const handleChange = (elm) => {
     const { name, value } = elm.target;
@@ -19,13 +18,17 @@ export default function AddItem() {
   const handleSubmit = (elm) => {
     elm.preventDefault();
 
-     const sessionId = localStorage.getItem('session_id');  // Ensure session_id exists
-    // const userId = localStorage.getItem('user_id');
+     const sessionId = localStorage.getItem('session_id');
 
-    // if (!sessionId || !userId) {
-    //   alert('You must be logged in to add an item!');
-    //   return;
-    // }
+     if (
+      formData.item_name.trim() === "" ||
+      formData.description.trim() === "" ||
+      formData.quantity === "" ||
+      Number(formData.quantity) <= 0
+    ) {
+      alert("Please fill in all fields with valid values.");
+      return;
+    }
 
     if (!sessionId) {
       alert('You must be logged in to add an item!');

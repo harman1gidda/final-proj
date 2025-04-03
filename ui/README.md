@@ -1,12 +1,30 @@
-# React + Vite
+# Front End Set-up
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Spinning up a Vite React App
 
-Currently, two official plugins are available:
+1. Navigate to a directory where you keep your coding projects
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+2. Create a new Vite React app in a new directory called `ui` with the command: `npm create vite@latest` and type `ui` for the project name
 
-## Expanding the ESLint configuration
+Vite guide: [text](https://vite.dev/guide/)
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3. Once this process is complete, navigate into the app with `cd ui` and run `npm install`. Install other dependencies at this time.
+
+- Run follwoing commands
+  -- `npm install react-router`
+  -- `npm install react-router-dom`
+  -- `npm install hamburger-react`
+  -- `npm i express knex pg cors nodemon bcrypt cookie-parser`
+
+4. Create a `.gitignore` file and add `node_modules` to it.
+5. Run `npm run dev` and frontend is running.
+
+## main.jsx
+
+- Navigate to the file and update the info
+  --remove sticte mode and import browser router from react-router-dom
+
+## App.jsx
+
+- Navigate to the file and update the info as needed for your app
+-

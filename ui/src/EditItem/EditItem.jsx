@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './EditItem.css'
 
 export default function EditItem({ item, onClose, onUpdate }) {
   const sessionId = localStorage.getItem('session_id');
@@ -35,6 +36,7 @@ export default function EditItem({ item, onClose, onUpdate }) {
           setStatus('Item updated successfully');
           onUpdate(); // callback to refresh parent list
           onClose(); // close the modal
+          alert ('Item is updated')
         } else {
           setStatus('Failed to update item: ' + data.message);
         }
