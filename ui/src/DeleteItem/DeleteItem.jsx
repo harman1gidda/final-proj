@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-export default function DeleteItem({ id, sessionId, list, setList }) {
+export default function DeleteItem({ id, sessionId }) {
+
+  const [status, setStatus] = useState(null);
+
   const handleDelete = () => {
     if (!sessionId) {
       alert('You must be logged in to delete an item!');
       return;
     }
 
-    fetch(`http://localhost:8081/item/${id}`, {
+    const confirmDelete = window.confirm('Are you sure you want to delete this?')
+
+    if (confirmDelete){
+      fetch(`http://localhost:8081/item/${id}`, {
       method: 'DELETE',
       mode: 'cors',
       headers: {
@@ -16,10 +22,18 @@ export default function DeleteItem({ id, sessionId, list, setList }) {
         'Authorization': `Bearer ${sessionId}`,
       },
     })
-      .then(() => {
-        setList(list.filter(item => item.id !== id));
-      })
-      .catch(err => console.error('Error deleting item', err));
+    .then((response) => {
+      if (response.ok) {
+        // Handle error response
+        alert('Item deleted')
+        window.location.reload();
+      } else{
+        setStatus ('Failed to delete')
+      }
+    })
+  } else {
+    console.log ('Delete action was cancelled')
+  }
   };
 
   return (

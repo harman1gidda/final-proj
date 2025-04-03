@@ -1,10 +1,10 @@
-// EditItem.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-export default function EditItem() {
+export default function EditItem({ sessionId }) {
+  const [status, setStatus] = useState(null);
   const { id } = useParams();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const sessionId = localStorage.getItem('session_id');
   const [formData, setFormData] = useState({
     item_name: '',
@@ -12,58 +12,74 @@ export default function EditItem() {
     quantity: 0,
   });
 
-  useEffect(() => {
-    if (!sessionId) {
-      navigate('/');
-      return;
-    }
+  // useEffect(() => {
+  //   if (!sessionId) {
+  //     navigate('/');
+  //     return;
+  //   }
 
-    fetch(`http://localhost:8081/item/${id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${sessionId}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length > 0) {
-          setFormData({
-            item_name: data[0].item_name,
-            description: data[0].description,
-            quantity: data[0].quantity,
-          });
-        }
-      })
-      .catch((err) => console.error('Error fetching item details', err));
-  }, [id, sessionId, navigate]);
+  //   fetch(`http://localhost:8081/item/${id}`, {
+  //     method: 'GET',
+  //     mode: 'cors',
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${sessionId}`,
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.length > 0) {
+  //         setFormData({
+  //           item_name: data[0].item_name,
+  //           description: data[0].description,
+  //           quantity: data[0].quantity,
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => console.error('Error fetching item details', err));
+  // }, [id, sessionId, navigate]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = (elm) => {
+    const { name, value } = elm.target;
+    setFormData({
+      ...formData, // Spread the existing formData
+      [name]: value
+    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleEdit = (elm) => {
+    elm.preventDefault();
 
     fetch(`http://localhost:8081/item/${id}`, {
       method: 'PATCH',
+      mode: 'cors',
       headers: {
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${sessionId}`,
       },
       body: JSON.stringify(formData),
     })
       .then((response) => response.json())
-      .then(() => {
-        navigate(`/item/${id}`);
+      .then((data) => {
+        if (data.success){
+          window.location.reload();
+          alert('Item updated successfully');
+          setStatus('Item updated successfully'); // Optional: for user feedback
+        }
+        // navigate(`/my-items`);
       })
-      .catch((err) => console.error('Error updating item', err));
+      .catch((error) => {
+        setStatus('Failed to update item'); // Optional: for user feedback
+        console.error(setStatus);
+      })
   };
 
   return (
     <div>
       <h2>Edit Item</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleEdit}>
         <input
           type="text"
           name="item_name"
@@ -81,7 +97,7 @@ export default function EditItem() {
           value={formData.quantity}
           onChange={handleChange}
         />
-        <button type="submit">Save Changes</button>
+        <button type="submit" onClick={handleEdit}>Save Changes</button>
       </form>
     </div>
   );

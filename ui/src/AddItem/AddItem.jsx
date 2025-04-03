@@ -8,8 +8,8 @@ export default function AddItem() {
     quantity: 0,
   });
   const navigate = useNavigate();
-  const sessionId = localStorage.getItem('session_id');  // Ensure session_id exists
-  const userId = localStorage.getItem('user_id');  // Assuming user_id is stored on login
+  // const sessionId = localStorage.getItem('session_id');  // Ensure session_id exists
+  // const userId = localStorage.getItem('user_id');  // Assuming user_id is stored on login
 
   const handleChange = (elm) => {
     const { name, value } = elm.target;
@@ -19,7 +19,8 @@ export default function AddItem() {
   const handleSubmit = (elm) => {
     elm.preventDefault();
 
-   // const sessionId = localStorage.getItem('session_id');
+    const sessionId = localStorage.getItem('session_id');  // Ensure session_id exists
+    const userId = localStorage.getItem('user_id');
 
     if (!sessionId || !userId) {
       alert('You must be logged in to add an item!');
@@ -32,17 +33,18 @@ export default function AddItem() {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionId}`, // Include session id for auth
+        //'Authorization': `Bearer ${sessionId}`, // Include session id for auth
       },
       body: JSON.stringify({
         item_name: formData.item_name,
         description: formData.description,
         quantity: formData.quantity,
-        user_id: userId }) // Include user_id in the request body,
+        //user_id: userId
+      }) // Include user_id in the request body,
     })
       .then(response => response.json())
       .then((data) => {
-        console.log(data);
+        console.log("items added:", data);
         navigate('/item'); // Redirect to items page after adding
       })
       .catch(err => console.error('Error adding item', err));

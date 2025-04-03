@@ -25,41 +25,23 @@ export default function AllItems() {
   // }, [sessionId, userId]); // Re-fetch when authentication status or userId changes
 
   useEffect(() => {
-    fetch('http://localhost:8081/item')
+    fetch('http://localhost:8081/item',{
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionId}`,
+      }
+    })
     .then((response) => response.json())
       .then((data) => {
         setList(data); // Set all items, no filtering based on user ID
       });
   }, []);
 
-  const filteredList = list
-    .filter((item) => item.item_name.toLowerCase().includes(search.toLowerCase()))
+  const filteredList = list.filter((item) => item.item_name.toLowerCase().includes(search.toLowerCase()))
 
-  // function handleDelete(id) {
-  //   if (!sessionId) {
-  //     alert("You must be logged in to delete an item!");
-  //     return;
-  //   }
-
-  //   fetch(`http://localhost:8081/item/${id}`, {
-  //     method: 'DELETE',
-  //     mode: 'cors',
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${isAuthenticated}`,
-  //       },
-  //     })
-  //     .then(() => {
-  //       setList(list.filter(item => item.id !== id));
-  //     })
-  //     .catch(err => console.error('Error deleting item', err));
-  //   }
-
-  //   function handleAdd() {
-  //     // Navigate to the add item page (you can create a form for this)
-  //     window.location.href = "/add-item"; // or use navigate('/add-item') if you're using useNavigate
-  //   }
 
   return (
     <>
@@ -72,13 +54,6 @@ export default function AllItems() {
         />
       </div>
 
-      {/* {sessionId && ( */}
-        {/* <div> */}
-          {/* <button onClick={handleAdd}> Add New Item</button> */}
-          {/* <AddItem /> */}
-        {/* </div> */}
-      {/* )} */}
-
       <div>
         <table className="item-table">
           <tbody>
@@ -88,16 +63,7 @@ export default function AllItems() {
                 <td>{row.item_name}</td>
                 <td>{row.description > 100 ? row.description.substring(0, 100) + '...' : row.description}</td>
                 <td>{row.quantity}</td>
-                {/* <td> */}
-                  {/* <Link to={`/item/${row.id}`}>View Details</Link> */}
-                  {/* {sessionId && ( */}
 
-                      {/* <Link to={`/edit/${row.id}`}>Edit</Link> */}
-                      {/* <button onClick={() => handleDelete(row.id)}>Delete</button> */}
-                      {/* <DeleteItem id={row.id} sessionId={sessionId} list={list} setList={setList} /> */}
-
-                  {/* )} */}
-                {/* </td> */}
               </tr>
             ))}
           </tbody>

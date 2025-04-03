@@ -102,12 +102,6 @@ app.post("/login", (req, res) => {
     });
 });
 
-//----LOGOUT and Clear COOKIE----//
-app.post("/logout", (req, res) => {
-  res.clearCookie("session_id"); // Clear the session cookie
-  res.json({ success: true, message: "Logged out successfully" });
-});
-
 //----GET----//
 //----Any user can see all items----//
 app.get("/item", (req, res) => {
@@ -123,6 +117,53 @@ app.get("/item", (req, res) => {
       res.json(data);
     });
 });
+// GET for loged in user?maybe
+app.get("/my-items", (req, res) => {
+  const sessionId = req.cookies.session_id; // Ensure session_id is available
+
+  if (!sessionId) {
+    return res.status(400).json({
+      success: false,
+      message: "User is not logged in",
+    });
+  }
+
+  // Find the user using the session ID
+  knex("users")
+    .where({ id: sessionId })
+    .first()
+    .then((users) => {
+      if (!users) {
+        return res.status(400).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Fetch only items belonging to the logged-in user
+      knex("item")
+        .where({ user_id: users.id })
+        .then((items) => {
+          res.json(items);
+        })
+        .catch((err) => {
+          console.error("Error fetching items:", err);
+          res.status(500).json({
+            success: false,
+            message: "Error fetching items",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      console.error("Error finding user:", err);
+      res.status(500).json({
+        success: false,
+        message: "Error finding user",
+        error: err,
+      });
+    });
+});
 
 app.get("/item/:id", (req, res) => {
   let getId = req.params.id;
@@ -135,23 +176,38 @@ app.get("/item/:id", (req, res) => {
 });
 
 //----POST----//
+//POST THAT WORKS with POSTMAN
 app.post("/item", (req, res) => {
-  const { item_name, description, quantity } = req.body;
-  //const sessionId = req.cookies.session_id;
-  const sessionId =
-    req.cookies.session_id || req.headers.authorization?.split(" ")[1];
+  const { user_id, item_name, description, quantity } = req.body;
 
-  if (!sessionId) {
-    return res
-      .status(400)
-      .json({ success: false, message: "User not found for the session!" });
-  }
+  knex("item")
+    .insert({ user_id, item_name, description, quantity })
+    .then(function () {
+      res.json({ succeess: true, message: "ok" });
+    });
+});
+
+// -- POST FOR loged in user? maybe
+
+app.post("/item", (req, res) => {
+  console.log("received data:", req.body);
+
+  const { item_name, description, quantity } = req.body;
+  const sessionId = req.cookies.session_id;
+  // const sessionId =
+  //   req.cookies.session_id || req.headers.authorization?.split(" ")[1];
+
+  // if (!sessionId) {
+  //   return res
+  //     .status(400)
+  //     .json({ success: false, message: "User not found for the session!" });
+  // }
 
   knex("users")
     .where({ id: sessionId })
     .first()
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         return res
           .status(400)
           .json({ success: false, message: "User not found" });
@@ -159,7 +215,7 @@ app.post("/item", (req, res) => {
 
       knex("item")
         .insert({
-          user_id: user.id,
+          user_id: users.id,
           item_name,
           description,
           quantity,
@@ -218,4 +274,10 @@ app.delete("/item/:id", (req, res) => {
     .then(function () {
       res.json({ succeess: true, message: "ok" });
     });
+});
+
+//----LOGOUT and Clear COOKIE----//
+app.post("/logout", (req, res) => {
+  res.clearCookie("session_id"); // Clear the session cookie
+  res.json({ success: true, message: "Logged out successfully" });
 });

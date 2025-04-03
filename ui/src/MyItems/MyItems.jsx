@@ -2,24 +2,34 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AddItem from '../AddItem/AddItem';
 import DeleteItem from '../DeleteItem/DeleteItem';
-import EditItem from '../EditItem/EditItem';
+//import EditItem from '../EditItem/EditItem';
 
 export default function MyItems() {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState('');
   const sessionId = localStorage.getItem('session_id');
-  const userId = localStorage.getItem('user_id');
+  //const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
     if (sessionId) {
-      fetch('http://localhost:8081/item')
+      fetch('http://localhost:8081/my-items',{
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionId}`,
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
+          setList(data);
           // Filter data based on the user ID for the logged-in user
-          setList(data.filter((item) => item.user_id === userId));
-        });
+          //setList(data.filter((item) => item.user_id === userId));
+        })
+        .catch((err)=> console.log('error fetching items', err));
     }
-  }, [sessionId, userId]);
+  }, [sessionId]);
 
   const filteredList = list.filter((item) =>
     item.item_name.toLowerCase().includes(search.toLowerCase())
@@ -54,9 +64,8 @@ export default function MyItems() {
                 </td>
                 <td>{row.quantity}</td>
                 <td>
-                  {/* <Link to={`/item/${row.id}`}>View Details</Link> */}
-                  <Link to={`/edit/${row.id}`}>Edit</Link>
-                  <DeleteItem id={row.id} sessionId={sessionId} setList={setList} list={list} />
+                  <DeleteItem id={row.id}/>
+                  {/* <EditItem id={row.id} currentData ={{...row}}/> */}
                 </td>
               </tr>
             ))}
