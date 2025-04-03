@@ -53,6 +53,7 @@ export default function AddItem() {
         if (data.success){
           console.log("items added:", data);
           navigate('/my-items');
+          window.location.reload();
         } else {
           alert (data.message)
         }

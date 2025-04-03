@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 
-export default function DeleteItem({ id, sessionId }) {
+export default function DeleteItem({ id }) {
 
   const [status, setStatus] = useState(null);
+  const sessionId = localStorage.getItem('session_id');
 
   const handleDelete = () => {
     if (!sessionId) {
@@ -11,6 +12,10 @@ export default function DeleteItem({ id, sessionId }) {
     }
 
     const confirmDelete = window.confirm('Are you sure you want to delete this?')
+    if (!confirmDelete) {
+      console.log('Delete action was cancelled');
+      return;
+    }
 
     if (confirmDelete){
       fetch(`http://localhost:8081/item/${id}`, {
@@ -22,21 +27,26 @@ export default function DeleteItem({ id, sessionId }) {
         'Authorization': `Bearer ${sessionId}`,
       },
     })
-    .then((response) => {
-      if (response.ok) {
-        // Handle error response
-        alert('Item deleted')
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert('Item deleted');
         window.location.reload();
-      } else{
-        setStatus ('Failed to delete')
+      } else {
+        setStatus('Failed to delete: ' + data.message);
       }
     })
-  } else {
-    console.log ('Delete action was cancelled')
+    .catch((err) => {
+      console.error('Error deleting item', err);
+      setStatus('Failed to delete');
+      });
+    }
   }
-  };
 
   return (
+    <>
     <button onClick={handleDelete}>Delete</button>
+    {status && <p>{status}</p>}
+    </>
   );
 }

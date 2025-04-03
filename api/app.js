@@ -403,13 +403,74 @@ app.patch("/item/:id", (req, res) => {
 });
 
 //----DELETE----//
+// app.delete("/item/:id", (req, res) => {
+//   let getId = req.params.id;
+//   knex("item")
+//     .where({ id: getId })
+//     .del()
+//     .then(function () {
+//       res.json({ succeess: true, message: "ok" });
+//     });
+// });
+
+//----DELETE----//
 app.delete("/item/:id", (req, res) => {
-  let getId = req.params.id;
+  // Retrieve session token either from cookies or the Authorization header
+  const sessionId =
+    req.cookies.session_id ||
+    (req.headers.authorization
+      ? req.headers.authorization.split(" ")[1]
+      : null);
+
+  if (!sessionId) {
+    return res.status(400).json({
+      success: false,
+      message: "Not authenticated. Please log in.",
+    });
+  }
+
+  const getId = req.params.id;
+
+  // Check if the item exists and belongs to the logged-in user
   knex("item")
     .where({ id: getId })
-    .del()
-    .then(function () {
-      res.json({ succeess: true, message: "ok" });
+    .first()
+    .then((item) => {
+      if (!item) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Item not found" });
+      }
+      if (item.user_id != sessionId) {
+        return res
+          .status(403)
+          .json({
+            success: false,
+            message: "Not authorized to delete this item",
+          });
+      }
+
+      // Proceed to delete if authorized
+      knex("item")
+        .where({ id: getId })
+        .del()
+        .then(() => {
+          res.json({ success: true, message: "Item deleted successfully" });
+        })
+        .catch((err) => {
+          res.status(500).json({
+            success: false,
+            message: "Error deleting item",
+            error: err,
+          });
+        });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Error fetching item",
+        error: err,
+      });
     });
 });
 
