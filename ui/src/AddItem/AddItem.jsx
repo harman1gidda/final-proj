@@ -38,17 +38,15 @@ export default function AddItem() {
     fetch('http://localhost:8081/my-items', {
       method: 'POST',
       mode: 'cors',
-      //credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionId}`, // Include session id for auth
+        'Authorization': `Bearer ${sessionId}`,
       },
       body: JSON.stringify({
         item_name: formData.item_name,
         description: formData.description,
         quantity: formData.quantity,
-        //user_id: userId
       })
     })
       .then(response => response.json())

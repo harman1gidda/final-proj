@@ -17,12 +17,9 @@ export default function Login() {
   const handleSubmit = (elm) => {
     elm.preventDefault();
 
-    //const {username, password} = formData;
-
     fetch('http://localhost:8081/login', {
       method: 'POST',
       mode: 'cors',
-     // credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json' },
@@ -31,7 +28,7 @@ export default function Login() {
       .then(response => response.json())
       .then((data) => {
         if (data.success) {
-          localStorage.setItem('session_id', data.session_id); // Save session
+          localStorage.setItem('session_id', data.session_id);
           localStorage.setItem('username', formData.username);
 
           navigate('/my-items');

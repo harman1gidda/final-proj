@@ -9,12 +9,10 @@ exports.seed = async function (knex) {
     // Delete any existing data to avoid duplication
     await knex("users").del();
 
-    // Hash passwords
     const hashedPasswordJames = await bcrypt.hash("cat", 10);
     const hashedPasswordJeff = await bcrypt.hash("bird", 10);
     const hashedPasswordMatt = await bcrypt.hash("dog", 10);
 
-    // Insert new data into the user table
     await knex("users").insert([
       {
         first_name: "James",

@@ -8,11 +8,11 @@ export default function Logout() {
     fetch('http://localhost:8081/logout', {
       method: 'POST',
       mode: 'cors',
-      credentials: 'same-origin', // Ensure cookies are sent
+      credentials: 'same-origin',
     })
       .then(response => response.json())
       .then(() => {
-        navigate('/login'); // Redirect to the login page after logout
+        navigate('/login');
       })
       .catch(err => {
         console.error('Logout failed:', err);

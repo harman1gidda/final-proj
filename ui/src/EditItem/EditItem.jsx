@@ -34,8 +34,8 @@ export default function EditItem({ item, onClose, onUpdate }) {
       .then((data) => {
         if (data.success) {
           setStatus('Item updated successfully');
-          onUpdate(); // callback to refresh parent list
-          onClose(); // close the modal
+          onUpdate();
+          onClose();
           alert ('Item is updated')
         } else {
           setStatus('Failed to update item: ' + data.message);
@@ -81,7 +81,6 @@ export default function EditItem({ item, onClose, onUpdate }) {
   );
 }
 
-// Simple inline styles for modal (you can replace with your own CSS)
 const modalOverlayStyle = {
   position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
